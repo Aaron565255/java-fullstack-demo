@@ -2,22 +2,22 @@ pipeline {
     agent any
 
     stages {
-        stage('Checkout') {
+        stage('Checkout Code') {
             steps {
                 git branch: 'main', url: 'https://github.com/Aaron565255/java-fullstack-demo.git'
             }
         }
 
-        stage('Compile Java') {
+        stage('Compile Java Files') {
             steps {
-                sh 'javac Backend.java Frontend.java'
+                bat 'javac Backend.java Frontend.java'
             }
         }
 
         stage('Run Frontend') {
             steps {
-                // This runs the Java program
-                sh 'java Frontend'
+                // Run the Java program (non-interactive output for Jenkins logs)
+                bat 'java Frontend'
             }
         }
 
@@ -32,6 +32,12 @@ pipeline {
                     reportName: 'Java Online Store'
                 ])
             }
+        }
+    }
+
+    post {
+        always {
+            echo 'Pipeline finished.'
         }
     }
 }
