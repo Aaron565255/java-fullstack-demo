@@ -1,28 +1,45 @@
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Map;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OMDB Movie Search</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        input { padding: 10px; width: 300px; }
+        button { padding: 10px; }
+        .movie { margin: 20px 0; border: 1px solid #ccc; padding: 10px; }
+        img { max-width: 200px; }
+    </style>
+</head>
+<body>
+    <h1>OMDB Movie Search</h1>
+    <input type="text" id="searchInput" placeholder="Enter movie title">
+    <button onclick="searchMovies()">Search</button>
+    <div id="results"></div>
 
-public class Frontend {
-    public static void main(String[] args) {
-        Backend backend = new Backend();
+    <script>
+        async function searchMovies() {
+            const query = document.getElementById('searchInput').value;
+            if (!query) return;
 
-        try (FileWriter writer = new FileWriter("index.html")) {
-            writer.write("<!DOCTYPE html>\n<html>\n<head>\n<title>Java Online Store</title>\n</head>\n<body>\n");
-            writer.write("<h1>Welcome to Java Online Store</h1>\n");
-            writer.write("<h2>Available Products</h2>\n<ul>\n");
+            const response = await fetch(`http://localhost:8080/api/movies/search?query=${encodeURIComponent(query)}`);
+            const movies = await response.json();
 
-            for (Map.Entry<String, Integer> entry : backend.getStock().entrySet()) {
-                writer.write("<li>" + entry.getKey() + " - Stock: " + entry.getValue() + "</li>\n");
-            }
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '';
 
-            writer.write("</ul>\n");
-            writer.write("<p>To order, run Jenkins build with product ID as parameter.</p>\n");
-            writer.write("</body>\n</html>");
-        } catch (IOException e) {
-            e.printStackTrace();
+            movies.forEach(movie => {
+                const movieDiv = document.createElement('div');
+                movieDiv.className = 'movie';
+                movieDiv.innerHTML = `
+                    <h3>${movie.title} (${movie.year})</h3>
+                    <p>Type: ${movie.type}</p>
+                    <img src="${movie.poster}" alt="${movie.title} poster">
+                `;
+                resultsDiv.appendChild(movieDiv);
+            });
         }
-
-        System.out.println("index.html generated successfully!");
-    }
-}
-
+    </script>
+</body>
+</html>
