@@ -1,33 +1,27 @@
-import java.util.HashMap;
-import java.util.Map;
+package com.example.omdbapi.controller;
 
-public class Backend {
-    private Map<String, Integer> stock;
+import java.util.List;
 
-    public Backend() {
-        stock = new HashMap<>();
-        stock.put("101 - Laptop", 5);
-        stock.put("102 - Mobile", 10);
-        stock.put("103 - Headphones", 7);
-    }
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-    public Map<String, Integer> getStock() {
-        return stock;
-    }
+import com.example.omdbapi.model.Movie;
+import com.example.omdbapi.service.OmdbService;
 
-    public String orderProduct(String productId) {
-        for (String product : stock.keySet()) {
-            if (product.startsWith(productId)) {
-                int qty = stock.get(product);
-                if (qty > 0) {
-                    stock.put(product, qty - 1);
-                    return product + " ordered successfully! Remaining stock: " + (qty - 1);
-                } else {
-                    return product + " is OUT OF STOCK!";
-                }
-            }
-        }
-        return "Invalid Product ID!";
+@RestController
+@RequestMapping("/api/movies")
+@CrossOrigin(origins = "*") // Allow frontend to call
+public class MovieController {
+
+    @Autowired
+    private OmdbService omdbService;
+
+    @GetMapping("/search")
+    public List<Movie> searchMovies(@RequestParam String query) {
+        return omdbService.searchMovies(query);
     }
 }
-
